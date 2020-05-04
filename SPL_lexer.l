@@ -3,12 +3,12 @@
 #include <string>
 
 /* Implementation of yyFlexScanner */ 
-#include "tiny_scanner.hpp"
+#include "SPL_scanner.hpp"
 #undef  YY_DECL
-#define YY_DECL int TINY::Scanner::yylex( TINY::Parser::semantic_type * const lval, TINY::Parser::location_type *loc )
+#define YY_DECL int SPL::Scanner::yylex( SPL::Parser::semantic_type * const lval, SPL::Parser::location_type *loc )
 
 /* typedef to make the returns for the tokens shorter */
-using token = TINY::Parser::token;
+using token = SPL::Parser::token;
 
 /* define yyterminate as this instead of NULL */
 #define yyterminate() return( token::END )
@@ -23,7 +23,7 @@ using token = TINY::Parser::token;
 
 %option debug
 %option nodefault
-%option yyclass="TINY::Scanner"
+%option yyclass="SPL::Scanner"
 %option noyywrap
 %option c++
 

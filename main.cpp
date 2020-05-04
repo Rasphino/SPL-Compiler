@@ -4,10 +4,9 @@
 
 #include "Driver.hpp"
 
-int
-main(const int argc, const char **argv) {
+int main(const int argc, const char **argv) {
     if (argc == 2) {
-        TINY::Driver driver;
+        SPL::Driver driver;
         if (std::strncmp(argv[1], "-o", 2) == 0) {
             driver.parse(std::cin);
         } else if (std::strncmp(argv[1], "-h", 2) == 0) {

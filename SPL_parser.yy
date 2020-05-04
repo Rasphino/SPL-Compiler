@@ -2,7 +2,7 @@
 %require  "3.0"
 %debug 
 %defines 
-%define api.namespace {TINY}
+%define api.namespace {SPL}
 /**
  * bison 3.3.2 change
  * %define parser_class_name to this, updated
@@ -12,7 +12,7 @@
 %define parser_class_name {Parser}
 
 %code requires{
-   namespace TINY {
+   namespace SPL {
       class Driver;
       class Scanner;
    }
@@ -76,7 +76,7 @@ item
 
 
 void 
-TINY::Parser::error( const location_type &l, const std::string &err_message )
+SPL::Parser::error( const location_type &l, const std::string &err_message )
 {
    std::cerr << "Error: " << err_message << " at " << l << "\n";
 }

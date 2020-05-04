@@ -4,14 +4,14 @@
 #include <fstream>
 #include <cassert>
 
-TINY::Driver::~Driver() {
+SPL::Driver::~Driver() {
     delete (scanner);
     scanner = nullptr;
     delete (parser);
     parser = nullptr;
 }
 
-void TINY::Driver::parse(const char *const filename) {
+void SPL::Driver::parse(const char *const filename) {
     assert(filename != nullptr);
     std::ifstream in_file(filename);
     if (!in_file.good()) {
@@ -20,7 +20,7 @@ void TINY::Driver::parse(const char *const filename) {
     parse_helper(in_file);
 }
 
-void TINY::Driver::parse(std::istream &stream) {
+void SPL::Driver::parse(std::istream &stream) {
     if (!stream.good() && stream.eof()) {
         return;
     }
@@ -28,32 +28,32 @@ void TINY::Driver::parse(std::istream &stream) {
 }
 
 
-void TINY::Driver::parse_helper(std::istream &stream) {
+void SPL::Driver::parse_helper(std::istream &stream) {
     delete (scanner);
-    scanner = new TINY::Scanner(&stream);
+    scanner = new SPL::Scanner(&stream);
 
     delete (parser);
-    parser = new TINY::Parser((*scanner) /* scanner */,
-                              (*this) /* driver */ );
+    parser = new SPL::Parser((*scanner) /* scanner */,
+                             (*this) /* driver */ );
     const int accept(0);
     if (parser->parse() != accept) {
         std::cerr << "Parse failed!!\n";
     }
 }
 
-void TINY::Driver::add_upper() {
+void SPL::Driver::add_upper() {
     uppercase++;
     chars++;
     words++;
 }
 
-void TINY::Driver::add_lower() {
+void SPL::Driver::add_lower() {
     lowercase++;
     chars++;
     words++;
 }
 
-void TINY::Driver::add_word(const std::string &word) {
+void SPL::Driver::add_word(const std::string &word) {
     words++;
     chars += word.length();
     for (const char &c : word) {
@@ -65,17 +65,17 @@ void TINY::Driver::add_word(const std::string &word) {
     }
 }
 
-void TINY::Driver::add_newline() {
+void SPL::Driver::add_newline() {
     lines++;
     chars++;
 }
 
-void TINY::Driver::add_char() {
+void SPL::Driver::add_char() {
     chars++;
 }
 
 
-std::ostream &TINY::Driver::print(std::ostream &stream) {
+std::ostream &SPL::Driver::print(std::ostream &stream) {
     stream << red << "Results: " << norm << "\n";
     stream << blue << "Uppercase: " << norm << uppercase << "\n";
     stream << blue << "Lowercase: " << norm << lowercase << "\n";

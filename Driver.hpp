@@ -1,14 +1,14 @@
-#ifndef TINY_COMPILER_DRIVER_H
-#define TINY_COMPILER_DRIVER_H
+#ifndef SPL_COMPILER_DRIVER_H
+#define SPL_COMPILER_DRIVER_H
 
 #include <string>
 #include <cstddef>
 #include <istream>
 
-#include "tiny_scanner.hpp"
-#include "tiny_parser.tab.hh"
+#include "SPL_scanner.hpp"
+#include "SPL_parser.tab.hh"
 
-namespace TINY {
+namespace SPL {
 
     class Driver {
     public:
@@ -45,13 +45,13 @@ namespace TINY {
         std::size_t lines = 0;
         std::size_t uppercase = 0;
         std::size_t lowercase = 0;
-        TINY::Parser *parser = nullptr;
-        TINY::Scanner *scanner = nullptr;
+        SPL::Parser *parser = nullptr;
+        SPL::Scanner *scanner = nullptr;
 
         const std::string red = "\033[1;31m";
         const std::string blue = "\033[1;36m";
         const std::string norm = "\033[0m";
     };
 
-} /* end namespace TINY */
+} /* end namespace SPL */
 #endif

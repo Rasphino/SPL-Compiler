@@ -1,5 +1,5 @@
-#ifndef TINY_COMPILER_TINY_SCANNER_H
-#define TINY_COMPILER_TINY_SCANNER_H
+#ifndef SPL_COMPILER_SPL_SCANNER_H
+#define SPL_COMPILER_SPL_SCANNER_H
 
 #if !defined(yyFlexLexerOnce)
 
@@ -7,10 +7,10 @@
 
 #endif
 
-#include "tiny_parser.tab.hh"
+#include "SPL_parser.tab.hh"
 #include "location.hh"
 
-namespace TINY {
+namespace SPL {
 
     class Scanner : public yyFlexLexer {
     public:
@@ -25,17 +25,17 @@ namespace TINY {
         using FlexLexer::yylex;
 
         virtual
-        int yylex(TINY::Parser::semantic_type *const lval,
-                  TINY::Parser::location_type *location);
-        // YY_DECL defined in tiny_lexer.l
+        int yylex(SPL::Parser::semantic_type *const lval,
+                  SPL::Parser::location_type *location);
+        // YY_DECL defined in SPL_lexer.l
         // Method body created by flex in mc_lexer.yy.cc
 
 
     private:
         /* yyval ptr */
-        TINY::Parser::semantic_type *yylval = nullptr;
+        SPL::Parser::semantic_type *yylval = nullptr;
     };
 
-} /* end namespace TINY */
+} /* end namespace SPL */
 
 #endif
