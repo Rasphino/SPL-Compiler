@@ -8,10 +8,10 @@ find_package(BISON REQUIRED)
 
 
 BISON_TARGET(SPL_parser
-        SPL_parser.yy
+            SPL_parser.yy
             ${CMAKE_CURRENT_BINARY_DIR}/SPL_parser.tab.cc)
 FLEX_TARGET(SPL_lexer
-        SPL_lexer.l
+            SPL_lexer.l
             ${CMAKE_CURRENT_BINARY_DIR}/SPL_lexer.yy.cc)
 ADD_FLEX_BISON_DEPENDENCY(SPL_lexer SPL_parser)
 
@@ -26,3 +26,5 @@ target_include_directories(SPL_compiler
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${FLEX_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR})
+
+add_subdirectory(googletest)
