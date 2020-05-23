@@ -7,24 +7,26 @@ find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 
-BISON_TARGET(SPL_parser
-            SPL_parser.yy
-            ${CMAKE_CURRENT_BINARY_DIR}/SPL_parser.tab.cc)
-FLEX_TARGET(SPL_lexer
-            SPL_lexer.l
-            ${CMAKE_CURRENT_BINARY_DIR}/SPL_lexer.yy.cc)
-ADD_FLEX_BISON_DEPENDENCY(SPL_lexer SPL_parser)
+BISON_TARGET(parser
+            parser.y
+            ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc)
+FLEX_TARGET(lexer
+            lexer.l
+            ${CMAKE_CURRENT_BINARY_DIR}/lexer.yy.cc)
+ADD_FLEX_BISON_DEPENDENCY(lexer parser)
+
+#add_executable(lexer
+#        lexer_main.cpp
+#        ${FLEX_lexer_OUTPUTS}
+#        )
 
 add_executable(SPL_compiler
         main.cpp
-        Driver.cpp
-        ${FLEX_SPL_lexer_OUTPUTS}
-        ${BISON_SPL_parser_OUTPUTS})
+        ${FLEX_lexer_OUTPUTS}
+        ${BISON_parser_OUTPUTS})
 
 target_include_directories(SPL_compiler
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${FLEX_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR})
-
-add_subdirectory(googletest)
