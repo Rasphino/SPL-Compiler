@@ -1,5 +1,5 @@
 //
-// Created by QZQ on 2018/6/9.
+// Created by LHH on 2020/5/26.
 //
 
 #ifndef SPLC_CONSTTABLE_H
@@ -9,27 +9,16 @@
 #include <list>
 #include <map>
 #include <iostream>
+#include <variant>
 
 struct ConstValueUnion {
-	double real{};
-	int integer{};
-	char ch{};
-
-	explicit ConstValueUnion(int i) : integer(i) {}
-
-	explicit ConstValueUnion(double r) : real(r) {}
-
-	explicit ConstValueUnion(char c) : ch(c) {}
-
-};
-
-enum ConstType {
-	integer, real, ch
+  enum {INTEGER, REAL, CHAR} type;
+  std::variant<double, int, char> val;
 };
 
 class ConstTable {
 public:
-	std::map<std::string, std::list<std::pair<ConstType, ConstValueUnion>>> table;
+	std::map<std::string, std::list<ConstValueUnion>> table;
 
 	bool isConst(const std::string &name) {
 		if (table.find(name) == table.end()) return false;
@@ -41,15 +30,15 @@ public:
 		for (auto bucket : table) {
 			std::cout << bucket.first << ": ";
 			for (auto item : bucket.second)
-				switch (item.first) {
-					case ConstType::integer:
-						std::cout << item.second.integer << ", ";
+				switch (item.type) {
+					case ConstValueUnion::INTEGER:
+						std::cout << std::get<int>(item.val) << ", ";
 						break;
-					case ConstType::real:
-						std::cout << item.second.real << ", ";
+					case ConstValueUnion::REAL:
+						std::cout << std::get<double>(item.val)  << ", ";
 						break;
-					case ConstType::ch:
-						std::cout << item.second.ch << ", ";
+					case ConstValueUnion::CHAR:
+						std::cout << std::get<char>(item.val)  << ", ";
 						break;
 				}
 			std::cout << std::endl;
@@ -58,47 +47,47 @@ public:
 
 	int getInt(const std::string &name) const {
 		auto item = table.at(name).back();
-		assert(item.first == ConstType::integer);
-		return table.at(name).back().second.integer;
+		assert(item.type == ConstValueUnion::INTEGER);
+		return std::get<int>(table.at(name).back().val);
 	}
 
 	double getReal(const std::string &name) const {
 		auto item = table.at(name).back();
-		assert(item.first == ConstType::real);
-		return table.at(name).back().second.real;
+		assert(item.type == ConstValueUnion::REAL);
+		return std::get<double>(table.at(name).back().val);
 	}
 
 	char getChar(const std::string &name) const {
 		auto item = table.at(name).back();
-		assert(item.first == ConstType::ch);
-		return table.at(name).back().second.ch;
+		assert(item.type == ConstValueUnion::CHAR);
+		return std::get<char>(table.at(name).back().val);
 	}
 
 	void addInt(const std::string &name, int i) {
 		if (table.find(name) != table.end()) {
-			table.at(name).push_back(std::make_pair(ConstType::integer, ConstValueUnion(i)));
+      table.at(name).push_back( {ConstValueUnion::INTEGER, i});
 		} else {
-			table.insert(std::make_pair(name, std::list<std::pair<ConstType, ConstValueUnion>>()));
-			table.at(name).push_back(std::make_pair(ConstType::integer, ConstValueUnion(i)));
+		  std::list<ConstValueUnion> tmp = {{ConstValueUnion::INTEGER, i}};
+			table.insert(std::make_pair(name, tmp));
 		}
 	}
 
 	void addReal(const std::string &name, double r) {
 		if (table.find(name) != table.end()) {
-			table.at(name).push_back(std::make_pair(ConstType::real, ConstValueUnion(r)));
+      table.at(name).push_back( {ConstValueUnion::REAL, r});
 		} else {
-			table.insert(std::make_pair(name, std::list<std::pair<ConstType, ConstValueUnion>>()));
-			table.at(name).push_back(std::make_pair(ConstType::real, ConstValueUnion(r)));
+      std::list<ConstValueUnion> tmp = {{ConstValueUnion::REAL, r}};
+      table.insert(std::make_pair(name, tmp));
 		}
 	}
 
 	void addChar(const std::string &name, char c) {
-		if (table.find(name) != table.end()) {
-			table.at(name).push_back(std::make_pair(ConstType::ch, ConstValueUnion(c)));
-		} else {
-			table.insert(std::make_pair(name, std::list<std::pair<ConstType, ConstValueUnion>>()));
-			table.at(name).push_back(std::make_pair(ConstType::ch, ConstValueUnion(c)));
-		}
+    if (table.find(name) != table.end()) {
+      table.at(name).push_back( {ConstValueUnion::CHAR, c});
+    } else {
+      std::list<ConstValueUnion> tmp = {{ConstValueUnion::REAL, c}};
+      table.insert(std::make_pair(name, tmp));
+    }
 	}
 
 	void remove(const std::string &name) {

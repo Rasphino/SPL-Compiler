@@ -2,6 +2,7 @@
 A naive SPL compiler implementation in C++.
 ## 依赖
   - LLVM 9.0
+  - C++ 17 standard
   
 ## 编译
 
