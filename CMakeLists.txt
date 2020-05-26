@@ -30,7 +30,7 @@ add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h Syst
 #        lexer.cpp
         )
 
-target_link_libraries(splc "-lLLVM-10")
+target_link_libraries(splc "-lLLVM-9")  # fixme: auto detect llvm version
 target_include_directories(splc
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
