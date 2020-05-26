@@ -26,11 +26,13 @@ add_definitions(${LLVM_DEFINITIONS})
 add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h SystemFunctions.cpp ConstTable.h
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
-#        parser.cpp
-#        lexer.cpp
         )
 
-target_link_libraries(splc "-lLLVM-9")  # fixme: auto detect llvm version
+# get llvm major version
+string(REPLACE "." ";" LLVM_VERSION_LIST ${LLVM_PACKAGE_VERSION})
+list(GET LLVM_VERSION_LIST 0 LLVM_VERSION_MAJOR)
+message("LLVM version major: ${LLVM_VERSION_MAJOR}")
+target_link_libraries(splc "-lLLVM-${LLVM_VERSION_MAJOR}")
 target_include_directories(splc
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}

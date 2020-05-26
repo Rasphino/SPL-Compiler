@@ -1,7 +1,7 @@
 # SPL-Compiler
 A naive SPL compiler implementation in C++.
 ## 依赖
-  - LLVM 10.0
+  - LLVM 9.0
   
 ## 编译
 
