@@ -84,21 +84,17 @@ void CodeGenContext::generateCode(Node *root, const std::string &outputFilename)
   // Initialize the target registry etc.
 
   outputCode("output.s", false);
-  outputCode("mips.s", true);
+  outputCode("aarch64.s", true);
 }
 
-void CodeGenContext::outputCode(const char *filename, bool mips) {
+void CodeGenContext::outputCode(const char *filename, bool aarch64) {
   InitializeAllTargetInfos();
   InitializeAllTargets();
   InitializeAllTargetMCs();
   InitializeAllAsmParsers();
   InitializeAllAsmPrinters();
-  std::string TargetTriple;
 
-  if (mips)
-    TargetTriple = "mips-apple-darwin17.6.0";
-  else
-    TargetTriple = sys::getDefaultTargetTriple();
+  std::string TargetTriple = aarch64 ? "aarch64-pc-linux" : sys::getDefaultTargetTriple();
   module->setTargetTriple(TargetTriple);
 
   std::string Error;
@@ -109,11 +105,7 @@ void CodeGenContext::outputCode(const char *filename, bool mips) {
     return;
   }
 
-  std::string CPU; // mips1 for mips: llvm-as < /dev/null | llc -march=x86-64 -mattr=help
-  if (mips)
-    CPU = "";
-  else
-    CPU = "generic";
+  std::string CPU = aarch64 ? "" : "generic";
   auto Features = "";
 
   TargetOptions opt;

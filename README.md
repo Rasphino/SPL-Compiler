@@ -27,9 +27,9 @@ LLVM IR。
 本机汇编代码。
 可以通过 `gcc -no-pie output.s` 生成本机可执行文件。
 
-- `mips.s`
+- `aarch64.s`
 
-MIPS汇编, target = mips-apple-darwin17.6.0。
+aarch64汇编, target = aarch64-pc-linux。可以通过 `aarch64-linux-gnu-gcc -no-pie -static aarch64.s` 编译，使用 `qemu-aarch64 ./a.out` 运行。
 
 ## Checklist
 - [x] 数组 一维
