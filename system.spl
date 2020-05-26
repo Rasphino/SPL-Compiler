@@ -1,0 +1,50 @@
+program system_functions;
+
+function pred__(x:char):char;
+begin
+    pred__ := chr(ord(x) - 1);
+end;
+
+function succ__(x:char):char;
+begin
+    succ__ := chr(ord(x) + 1);
+end;
+
+function fabs__(x:real):real;
+begin
+    if (x > 0.0) then fabs:=0.0
+    else fabs__:=-x;
+end;
+
+function sqrt__(x:real):real;
+var
+    k: real;
+begin
+    k := 1.0;
+    while fabs__(k * k - x) > 0.001 do
+    begin
+        k := (k + x / k) / 2.0;
+    end;
+    sqrt__ := k;
+end;
+
+function odd__(x:integer):boolean;
+begin
+    if (x mod 2 = 0) then odd__ := false
+    else odd__ := true;
+end;
+
+
+function abs__(x:integer):integer;
+begin
+    if (x > 0) then abs__:=x
+    else abs__:=0-x;
+end;
+
+function sqr__(x:integer):integer;
+begin
+    sqr__ := x * x;
+end;
+
+begin
+end.
