@@ -19,12 +19,12 @@ make
 
 - `output.ll`
 
-LLVM IR。
+LLVM IR。
 
 - `output.s`
       
 本机汇编代码。
-可以通过 `gcc -o test.out output.s`生成本机可执行文件。
+可以通过 `gcc -no-pie output.s` 生成本机可执行文件。
 
 - `mips.s`
 
