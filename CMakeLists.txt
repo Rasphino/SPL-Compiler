@@ -24,7 +24,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 
-add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h SystemFunctions.cpp ConstTable.h
+add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h ConstTable.h
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
         )
@@ -41,8 +41,3 @@ target_include_directories(splc
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${FLEX_INCLUDE_DIRS}
         ${CMAKE_CURRENT_BINARY_DIR})
-
-
-add_custom_command(TARGET splc
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/system.spl ${CMAKE_CURRENT_BINARY_DIR})
