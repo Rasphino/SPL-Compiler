@@ -18,10 +18,11 @@ find_package(LLVM REQUIRED CONFIG)
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
+add_subdirectory(fmt)
+
 include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-command-line-argument -Wno-deprecated-register")
 
 add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h SystemFunctions.cpp ConstTable.h
         ${FLEX_lexer_OUTPUTS}
@@ -33,6 +34,8 @@ string(REPLACE "." ";" LLVM_VERSION_LIST ${LLVM_PACKAGE_VERSION})
 list(GET LLVM_VERSION_LIST 0 LLVM_VERSION_MAJOR)
 message("LLVM version major: ${LLVM_VERSION_MAJOR}")
 target_link_libraries(splc "-lLLVM-${LLVM_VERSION_MAJOR}")
+target_link_libraries(splc fmt::fmt)
+
 target_include_directories(splc
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
