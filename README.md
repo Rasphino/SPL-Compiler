@@ -31,6 +31,10 @@ LLVM IR。
 
 aarch64汇编, target = aarch64-pc-linux。可以通过 `aarch64-linux-gnu-gcc -no-pie -static aarch64.s` 编译，使用 `qemu-aarch64 ./a.out` 运行。
 
+- `ast.json`
+
+AST节点信息，用于`visualize.html` 可视化
+
 ## Checklist
 - [x] 数组 一维
 - [x] record实现
@@ -57,6 +61,6 @@ open visualize.html
 3. 代码生成(default target和MIPS)
 
 default target可在本机编译运行，检查正确性。
-MIPS为实验要求。
+aarch64为扩展实现。
 
 4. 超简单的错误提示。
