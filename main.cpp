@@ -34,8 +34,6 @@ void printAST(Node *node) {
   }
 }
 
-void doNothing(Node *node) {}
-
 int main(int argc, char **argv) {
   std::string sourcePath;
   auto sourceFile = sourcePath + argv[1];
@@ -52,7 +50,7 @@ int main(int argc, char **argv) {
          << fmt::sprintf(R"({ key: %d, text: "%s", fill: "#f8f8f8", stroke: "#000000" }, )",
                          root->id, root->getName()) << std::endl;
   std::cout << "begin draw ast" << std::endl;
-  root->traverse(printAST, doNothing);
+  root->traverse(printAST, [](Node *){});
   std::cout << "finish draw ast" << std::endl;
   astOut << "]" << std::endl;
   astOut.close();
