@@ -52,10 +52,7 @@ aarch64汇编, target = aarch64-pc-linux。可以通过 `aarch64-linux-gnu-gcc -
 1. SPL基本语法
 2. 可视化AST
 
-dependency: graphviz
-```bash
-dot -Tpng -o ast.png ast.dot
-```
+open visualize.html
 
 3. 代码生成(default target和MIPS)
 

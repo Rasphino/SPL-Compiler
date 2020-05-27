@@ -15,14 +15,13 @@ extern int yyparse();
 std::ofstream astOut;
 int Node::idCount = 0;
 
+//to do: node->info() is not printed
 void printAST(Node *node) {
-    //	std::cout << "this is " << node << std::endl;
     auto children = node->getChildren();
     std::string info = node->getInfo();
-    astOut << node->id << "[label = \"" << node->getName() << (info.empty() ? "" : " : ") << info << "\"]" << std::endl;
     for (auto child : children) {
         if (child)
-            astOut << node->id << " -- " << child->id << std::endl;
+	 astOut << "{ key: "<<child->id<<", text: \""<<child->getName()<<"\", fill: \"#f8f8f8\", stroke: \"#000000\","<<"parent:"<<node->id<<" }," << std::endl;
     }
 }
 
@@ -39,12 +38,13 @@ int main(int argc, char **argv) {
     //	install system functions
 	installSystemFunctions(root);
     //visualize
-    astOut.open("ast.dot", std::ios::out | std::ios::trunc);
-    astOut << "graph g{" << std::endl;
+    astOut.open("ast.json", std::ios::out | std::ios::trunc);
+    astOut << "var nodeDataArray = [ " << std::endl;
+    astOut << "{ key: "<<root->id<<", text: \""<<root->getName()<<"\", fill: \"#f8f8f8\", stroke: \"#000000\" }," << std::endl;
     std::cout << "begin draw ast" << std::endl;
     root->traverse(printAST, doNothing);
     std::cout << "finish draw ast" << std::endl;
-    astOut << "}" << std::endl;
+    astOut << "]" << std::endl;
     astOut.close();
 
     CodeGenContext context;
