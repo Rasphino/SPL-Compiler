@@ -42,8 +42,6 @@ int main(int argc, char **argv) {
   yyparse();
 
   auto root = astRoot;
-  //	install system functions
-  installSystemFunctions(root);
   //visualize
   astOut.open("ast.json", std::ios::out | std::ios::trunc);
   astOut << "var nodeDataArray = [ " << std::endl

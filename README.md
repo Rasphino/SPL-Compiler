@@ -14,7 +14,6 @@ make
 ## 运行
 
 `./splc input.spl`
-**splc和system.spl必须在同一目录下**
 
 ## 输出
 
