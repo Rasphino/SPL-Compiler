@@ -11,8 +11,6 @@
 extern FILE *yyin;
 extern Program *astRoot;
 
-void installSystemFunctions(Program *root);
-
 extern int yyparse();
 
 std::ofstream astOut;
