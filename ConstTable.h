@@ -27,7 +27,7 @@ public:
 
 	void printTable() {
 		std::cout << "const table : \n============================";
-		for (auto bucket : table) {
+		for (const auto& bucket : table) {
 			std::cout << bucket.first << ": ";
 			for (auto item : bucket.second)
 				switch (item.type) {

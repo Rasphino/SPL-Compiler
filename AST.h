@@ -183,19 +183,12 @@ public:
 // TODO: hacks needed
 class ConstValue : public AbstractExpression {
 public:
-    static const int T_INTEGER = 1;
-    static const int T_REAL = 2;
-    static const int T_CHAR = 3;
-    static const int T_SYS_CON = 4;
-    //todo: does char/string exist?
-    //don't exist in yacc, but there is chr() function.
-    static const int T_STRING = 5;
+    // todo: does char/string exist? Doesn't exist in yacc, but there is chr() function.
+    enum {T_INTEGER, T_REAL, T_CHAR, T_SYS_CON, T_STRING} type;
 
     std::string value;
-    int type{};
 
-    ConstValue(std::string value, int type) : value(std::move(value)), type(type) {
-      assert(type >= 1 && type <= 5);
+    ConstValue(std::string value, decltype(type) type) : value(std::move(value)), type(type) {
       if (type == T_CHAR)
         this->value = this->value.substr(1, 1);
       //		no T_STRING
@@ -260,14 +253,10 @@ public:
     }
 };
 
-// TODO: enum class
 class TypeDecl : public AbstractStatement {
 public:
-    static const int T_SIMPLE_TYPE_DECLARE = 1;
-    static const int T_ARRAY_TYPE_DECLARE = 2;
-    static const int T_RECORD_TYPE_DECLARE = 3;
+    enum {T_SIMPLE_TYPE_DECLARE, T_ARRAY_TYPE_DECLARE, T_RECORD_TYPE_DECLARE} type;
 
-    int type{};
     SimpleTypeDecl *simpleTypeDecl{};
     ArrayTypeDecl *arrayTypeDecl{};
     RecordTypeDecl *recordTypeDecl{};
@@ -298,13 +287,8 @@ public:
 
 class SimpleTypeDecl : public AbstractStatement {
 public:
-    static const int T_SYS_TYPE = 1;
-    static const int T_TYPE_NAME = 2;
-    static const int T_ENUMERATION = 3;
-    static const int T_RANGE = 4;
-    static const int T_NAME_RANGE = 5;
+    enum {T_SYS_TYPE, T_TYPE_NAME, T_ENUMERATION, T_RANGE, T_NAME_RANGE} type;
 
-    int type{};
     std::string sysType;
     std::string name;
     NameList *nameList{};
@@ -312,7 +296,7 @@ public:
     ConstValue *lowerBound{}, *upperBound{};
     std::string lowerName, upperName;
 
-    SimpleTypeDecl(int type, const std::string &st) : type(type) {
+    SimpleTypeDecl(decltype(type) type, const std::string &st) : type(type) {
       if (type == T_SYS_TYPE)
         sysType = st;
       if (type == T_TYPE_NAME)
@@ -471,14 +455,8 @@ public:
 
 class RoutinePart : public AbstractStatement {
 public:
-    //todo: don't know what it is
-    static const int T_ROUTINE_FUNC = 1;
-    static const int T_ROUTINE_PROC = 2;
-    static const int T_FUNC = 3;
-    static const int T_PROC = 4;
-    static const int T_EMPTY = 5;
+    enum {T_ROUTINE_FUNC, T_ROUTINE_PROC, T_FUNC, T_PROC, T_EMPTY} type;
 
-    int type{};
     RoutinePart *routinePart{};
     FunctionDecl *functionDecl{};
     ProcedureDecl *procedureDecl{};
@@ -501,7 +479,7 @@ public:
       type = T_PROC;
     }
 
-    explicit RoutinePart(int type) : type(type) {
+    explicit RoutinePart(decltype(type) type) : type(type) {
       assert(type == T_EMPTY);
     }
 
@@ -599,10 +577,8 @@ public:
 
 class ParaTypeList : public AbstractStatement {
 public:
-    static const int T_VAR = 1;
-    static const int T_VAL = 2;
+    enum {T_VAR, T_VAL} type;
 
-    int type{};
     VarParaList *varParaList{};
     ValParaList *valParaList{};
     SimpleTypeDecl *typeDecl{};
@@ -681,13 +657,11 @@ public:
 
 class Stmt : public AbstractStatement {
 public:
-    static const int T_LABELED = 1;
-    static const int T_UNLABELED = 2;
+    enum {T_LABELED, T_UNLABELED} type;
 
-    int type{};
     NonLabelStmt *nonLabelStmt{};
 
-    Stmt(int type, NonLabelStmt *nonLabelStmt) : type(type), nonLabelStmt(nonLabelStmt) {
+    Stmt(decltype(type) type, NonLabelStmt *nonLabelStmt) : type(type), nonLabelStmt(nonLabelStmt) {
       assert(type == T_LABELED || type == T_UNLABELED);
       _children.emplace_back(nonLabelStmt);
     }
@@ -698,17 +672,8 @@ public:
 // fixme: shit!
 class NonLabelStmt : public AbstractStatement {
 public:
-    static const int T_ASSIGN = 1;
-    static const int T_PROC = 2;
-    static const int T_IF = 3;
-    static const int T_REPEAT = 4;
-    static const int T_WHILE = 5;
-    static const int T_FOR = 6;
-    static const int T_CASE = 7;
-    static const int T_GOTO = 8;
-    static const int T_COMPOUND = 9;
+    enum {T_ASSIGN, T_PROC, T_IF, T_REPEAT, T_WHILE, T_FOR, T_CASE, T_GOTO, T_COMPOUND} type;
 
-    int type{};
     AssignStmt *assignStmt{};
     ProcStmt *procStmt{};
     CompoundStmt *compoundStmt{};
@@ -757,11 +722,8 @@ public:
 
 class AssignStmt : public AbstractStatement {
 public:
-    static const int T_SIMPLE = 1;
-    static const int T_ARRAY = 2;
-    static const int T_RECORD = 3;
+    enum {T_SIMPLE, T_ARRAY, T_RECORD} type;
 
-    int type{};
     std::string id;
     Expression *rhs;
     Expression *index{};
@@ -789,14 +751,8 @@ public:
 
 class ProcStmt : public AbstractStatement {
 public:
-    static const int T_SIMPLE = 1;
-    static const int T_SIMPLE_ARGS = 2;
-    static const int T_SYS_PROC = 3;
-    static const int T_SYS_PROC_EXPR = 4;
-    //fixme: what's read ??
-    static const int T_READ = 5;
+    enum {T_SIMPLE, T_SIMPLE_ARGS, T_SYS_PROC, T_SYS_PROC_EXPR, T_READ} type;
 
-    int type{};
     std::string procId;
     ArgsList *argsList{};
     std::string sysProc;
@@ -805,7 +761,7 @@ public:
     //fixme: read(factor) ??
     Factor *factor{};
 
-    ProcStmt(int type, const std::string &st) : type(type) {
+    ProcStmt(decltype(type) type, const std::string &st) : type(type) {
       assert(type == T_SIMPLE || type == T_SYS_PROC);
       if (type == T_SIMPLE)
         procId = st;
@@ -920,11 +876,9 @@ public:
 
 class Direction : public AbstractStatement {
 public:
-    static const int T_TO = 1;
-    static const int T_DOWNTO = 2;
-    int type{};
+    enum {T_TO, T_DOWNTO} type;
 
-    explicit Direction(int type) : type(type) { assert(type == T_TO || type == T_DOWNTO); }
+    explicit Direction(decltype(type) type) : type(type) { assert(type == T_TO || type == T_DOWNTO); }
 };
 
 class CaseStmt : public AbstractStatement {
@@ -957,9 +911,8 @@ public:
 
 class CaseExpr : public AbstractStatement {
 public:
-    static const int T_CONST = 1;
-    static const int T_ID = 2;
-    int type{};
+    enum {T_CONST, T_ID} type;
+
     ConstValue *constValue{};
     std::string id;
     Stmt *stmt;
@@ -1009,20 +962,13 @@ public:
 
 class Expression : public AbstractExpression {
 public:
-    static const int T_EQ = 1;
-    static const int T_NE = 2;
-    static const int T_GE = 3;
-    static const int T_GT = 4;
-    static const int T_LE = 5;
-    static const int T_LT = 6;
-    static const int T_EXPR = 7;
-    int type;
+    enum {T_EQ, T_NE, T_GE, T_GT, T_LE, T_LT, T_EXPR} type;
+
     Expression *expression{};
     Expr *expr{};
 //    llvm::Value *lastValue = nullptr;
 
-    Expression(int type, Expression *expression, Expr *expr) : type(type), expression(expression), expr(expr) {
-      assert(type >= 1 && type <= 6);
+    Expression(decltype(type) type, Expression *expression, Expr *expr) : type(type), expression(expression), expr(expr) {
       _children.emplace_back(expression);
       _children.emplace_back(expr);
     }
@@ -1034,18 +980,12 @@ public:
 
 class Expr : public AbstractExpression {
 public:
-    static const int T_PLUS = 1;
-    static const int T_MINUS = 2;
-    static const int T_OR = 3;
-    static const int T_TERM = 4;
+    enum {T_PLUS, T_MINUS, T_OR, T_TERM} type;
 
-    int type;
     Expr *expr{};
     Term *term{};
 
-    Expr(int type, Expr *expr, Term *term) : type(type), expr(expr), term(term) {
-      assert(type >= 1 && type <= 3);
-    }
+    Expr(decltype(type) type, Expr *expr, Term *term) : type(type), expr(expr), term(term) {}
 
     explicit Expr(Term *term) : term(term), type(T_TERM) {
       _children.emplace_back(expr);
@@ -1057,18 +997,12 @@ public:
 
 class Term : public AbstractExpression {
 public:
-    static const int T_MUL = 1;
-    static const int T_DIV = 2;
-    static const int T_MOD = 3;
-    static const int T_AND = 4;
-    static const int T_FACTOR = 5;
+    enum {T_MUL, T_DIV, T_MOD, T_AND, T_FACTOR} type;
 
-    int type;
     Term *term{};
     Factor *factor{};
 
-    Term(int type, Term *term, Factor *factor) : type(type), term(term), factor(factor) {
-      assert(type >= 1 && type <= 4);
+    Term(decltype(type) type, Term *term, Factor *factor) : type(type), term(term), factor(factor) {
       _children.emplace_back(term);
       _children.emplace_back(factor);
     }
@@ -1082,18 +1016,11 @@ public:
 
 class Factor : public AbstractExpression {
 public:
-    static const int T_NAME = 1;
-    static const int T_NAME_ARGS = 2;
-    static const int T_SYS_FUNCT = 3;
-    static const int T_SYS_FUNCT_ARGS = 4;
-    static const int T_CONST = 5;
-    static const int T_EXPR = 6;
-    static const int T_NOT_FACTOR = 7;
-    static const int T_MINUS_FACTOR = 8;
-    static const int T_ID_EXPR = 9;
-    static const int T_ID_DOT_ID = 10;
+    enum {
+        T_NAME, T_NAME_ARGS, T_SYS_FUNCT, T_SYS_FUNCT_ARGS, T_CONST, T_EXPR, T_NOT_FACTOR,
+        T_MINUS_FACTOR, T_ID_EXPR, T_ID_DOT_ID
+    } type;
 
-    int type;
     std::string name;
     ArgsList *argsList{};
     std::string sysFunction;
@@ -1116,7 +1043,7 @@ public:
       return "";
     }
 
-    Factor(int type, const std::string &st) : type(type) {
+    Factor(decltype(type) type, const std::string &st) : type(type) {
       assert(type == T_NAME || type == T_SYS_FUNCT);
       if (type == T_NAME)
         name = st;
@@ -1125,7 +1052,7 @@ public:
       }
     }
 
-    Factor(int type, const std::string &st, ArgsList *argsList) : type(type), argsList(argsList) {
+    Factor(decltype(type) type, const std::string &st, ArgsList *argsList) : type(type), argsList(argsList) {
       assert(type == T_NAME_ARGS || type == T_SYS_FUNCT_ARGS);
       if (type == T_NAME_ARGS)
         name = st;
@@ -1142,7 +1069,7 @@ public:
 
     explicit Factor(Expression *expression) : expression(expression), type(T_EXPR) {}
 
-    Factor(int type, Factor *factor) : type(type), factor(factor) {
+    Factor(decltype(type) type, Factor *factor) : type(type), factor(factor) {
       assert(type == T_NOT_FACTOR || type == T_MINUS_FACTOR);
     }
 
