@@ -1,9 +1,7 @@
-//
-// Created by QZQ on 2018/5/30.
-//
-
 #ifndef SPLC_NODEPRECEDENCE_H
 #define SPLC_NODEPRECEDENCE_H
+
+class Node;
 
 class Program;
 

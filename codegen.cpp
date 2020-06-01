@@ -13,20 +13,20 @@
 using namespace llvm;
 
 
-void CodeGenContext::CreateRead() {
+void CodeGenContext::readFunc() {
   std::vector<llvm::Type *> arg_types;
   arg_types.push_back(llvm::Type::getInt8PtrTy(MyContext));
-  auto printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(MyContext), arg_types, true);
-  read = llvm::Function::Create(printf_type, llvm::Function::ExternalLinkage, llvm::Twine("scanf"),
+  auto func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(MyContext), arg_types, true);
+  read = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, llvm::Twine("scanf"),
                                 module);
   read->setCallingConv(llvm::CallingConv::C);
 }
 
-void CodeGenContext::CreatePrint() {
+void CodeGenContext::printFunc() {
   std::vector<llvm::Type *> printf_arg_types;
   printf_arg_types.push_back(llvm::Type::getInt8PtrTy(MyContext));
-  auto printf_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(MyContext), printf_arg_types, true);
-  print = llvm::Function::Create(printf_type, llvm::Function::ExternalLinkage, llvm::Twine("printf"),
+  auto func_type = llvm::FunctionType::get(llvm::Type::getInt32Ty(MyContext), printf_arg_types, true);
+  print = llvm::Function::Create(func_type, llvm::Function::ExternalLinkage, llvm::Twine("printf"),
                                  module);
   print->setCallingConv(llvm::CallingConv::C);
 }
@@ -34,7 +34,7 @@ void CodeGenContext::CreatePrint() {
 void CodeGenContext::generateCode(Node *root, const std::string &outputFilename) {
   std::cout << "Generating code...\n";
 
-  /* Create the top level interpreter function to call as entry */
+  // Create the top level interpreter function to call as entry
   std::vector<llvm::Type *> argTypes;
   llvm::FunctionType *ftype = llvm::FunctionType::get(llvm::Type::getInt32Ty(MyContext), makeArrayRef(argTypes),
                                                       false);
@@ -44,20 +44,18 @@ void CodeGenContext::generateCode(Node *root, const std::string &outputFilename)
 
 
   // create print read ord chr
-  CreatePrint();
-  CreateRead();
-  // create read
+  printFunc();
+  readFunc();
 
-
-  /* Push a new variable/block context */
+  // Push a new variable/basicBlock context
   pushBlock(bblock);
-  blocks.top()->function = mainFunction;
+  blocksStack.top()->function = mainFunction;
   root->codeGen(*this);
 
   llvm::ReturnInst::Create(MyContext, ConstantInt::get(Type::getInt32Ty(MyContext), llvm::APInt(32, 0, false)),currentBlock());
   popBlock();
 
-  while (!blocks.empty())
+  while (!blocksStack.empty())
     popBlock();
   // popBlock();
 
@@ -87,7 +85,7 @@ void CodeGenContext::generateCode(Node *root, const std::string &outputFilename)
   outputCode("aarch64.s", true);
 }
 
-void CodeGenContext::outputCode(const char *filename, bool aarch64) {
+void CodeGenContext::outputCode(const std::string& filename, bool aarch64) const {
   InitializeAllTargetInfos();
   InitializeAllTargets();
   InitializeAllTargetMCs();
@@ -110,8 +108,7 @@ void CodeGenContext::outputCode(const char *filename, bool aarch64) {
 
   TargetOptions opt;
   auto RM = Optional<Reloc::Model>();
-  auto TheTargetMachine =
-          Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+  auto TheTargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
 
   module->setDataLayout(TheTargetMachine->createDataLayout());
 

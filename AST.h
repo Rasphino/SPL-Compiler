@@ -7,7 +7,7 @@
 
 #include <llvm/IR/Value.h>
 
-#include "NodePredeclaration.h"
+#include "ASTPredeclaration.h"
 #include "codegen.h"
 #include "ConstTable.h"
 
@@ -21,7 +21,7 @@ public:
 
     virtual ~Node() = default;
 
-    virtual llvm::Value *codeGen(CodeGenContext &context) { return 0; }
+    virtual llvm::Value *codeGen(CodeGenContext &context) { return nullptr; }
 
     virtual std::vector<Node *> getChildren() {
       return _children;
