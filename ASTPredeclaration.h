@@ -1,5 +1,5 @@
-#ifndef SPLC_NODEPRECEDENCE_H
-#define SPLC_NODEPRECEDENCE_H
+#ifndef SPLC_ASTPRECEDENCE_H
+#define SPLC_ASTPRECEDENCE_H
 
 namespace AST {
     class Node;
@@ -115,4 +115,4 @@ namespace AST {
     class ArgsList;
 }
 
-#endif //SPLC_NODEPRECEDENCE_H
+#endif //SPLC_ASTPRECEDENCE_H

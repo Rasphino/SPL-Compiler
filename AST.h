@@ -8,7 +8,7 @@
 #include <llvm/IR/Value.h>
 
 #include "ASTPredeclaration.h"
-#include "codegen.h"
+#include "CodeGen.h"
 #include "ConstTable.h"
 
 namespace CodeGen {
@@ -38,9 +38,7 @@ namespace AST {
                 i->traverse(pre, post);
             post(this);
           } catch (std::exception &e) {
-            std::cout << e.what() << std::endl;
-          } catch (...) {
-            std::cout << "unknown exception during traversal" << std::endl;
+            std::cerr << e.what() << std::endl;
           }
         }
 

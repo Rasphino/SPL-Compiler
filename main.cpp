@@ -5,7 +5,7 @@
 #include <fmt/printf.h>
 
 #include "AST.h"
-#include "codegen.h"
+#include "CodeGen.h"
 #include "parser.tab.hh"
 
 extern FILE *yyin;

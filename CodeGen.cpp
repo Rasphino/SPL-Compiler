@@ -1,4 +1,4 @@
-#include "codegen.h"
+#include "CodeGen.h"
 #include <llvm/Bitcode/BitcodeReader.h>
 #include <llvm/Bitcode/BitcodeWriter.h>
 #include <llvm/Support/FileSystem.h>
@@ -92,25 +92,25 @@ void CodeGenContext::outputCode(const std::string& filename, bool aarch64) const
   InitializeAllAsmParsers();
   InitializeAllAsmPrinters();
 
+  std::string CPU = aarch64 ? "" : "generic";
   std::string TargetTriple = aarch64 ? "aarch64-pc-linux" : sys::getDefaultTargetTriple();
   module->setTargetTriple(TargetTriple);
 
-  std::string Error;
-  auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
+  std::string error;
+  auto target = TargetRegistry::lookupTarget(TargetTriple, error);
 
-  if (!Target) {
-    errs() << Error;
+  if (!target) {
+    errs() << error;
     return;
   }
 
-  std::string CPU = aarch64 ? "" : "generic";
   auto Features = "";
 
   TargetOptions opt;
   auto RM = Optional<Reloc::Model>();
-  auto TheTargetMachine = Target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+  auto targetMachine = target->createTargetMachine(TargetTriple, CPU, Features, opt, RM);
 
-  module->setDataLayout(TheTargetMachine->createDataLayout());
+  module->setDataLayout(targetMachine->createDataLayout());
 
   //	auto filename = "output.s";
   std::error_code EC;
@@ -122,9 +122,9 @@ void CodeGenContext::outputCode(const std::string& filename, bool aarch64) const
   }
 
   legacy::PassManager pass;
-  auto FileType = LLVMTargetMachine::CodeGenFileType::CGFT_AssemblyFile;
-  if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
-    errs() << "TheTargetMachine can't emit a file of this type";
+  auto fileType = LLVMTargetMachine::CodeGenFileType::CGFT_AssemblyFile;
+  if (targetMachine->addPassesToEmitFile(pass, dest, nullptr, fileType)) {
+    errs() << "targetMachine can't emit a file of this type";
     return;
   }
 
