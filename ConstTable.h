@@ -11,13 +11,13 @@
 #include <iostream>
 #include <variant>
 
-struct ConstValueUnion {
-  enum {INTEGER, REAL, CHAR} type;
-  std::variant<double, int, char> val;
-};
-
 class ConstTable {
 public:
+  struct ConstValueUnion {
+    enum {INTEGER, REAL, CHAR} type;
+    std::variant<double, int, char> val;
+  };
+
 	std::map<std::string, std::list<ConstValueUnion>> table;
 
 	bool isConst(const std::string &name) {

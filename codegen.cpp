@@ -11,7 +11,7 @@
 #include <llvm/Target/TargetOptions.h>
 
 using namespace llvm;
-
+using namespace CodeGen;
 
 void CodeGenContext::readFunc() {
   std::vector<llvm::Type *> arg_types;
@@ -31,7 +31,7 @@ void CodeGenContext::printFunc() {
   print->setCallingConv(llvm::CallingConv::C);
 }
 
-void CodeGenContext::generateCode(Node *root, const std::string &outputFilename) {
+void CodeGenContext::generateCode(AST::Node *root, const std::string &outputFilename) {
   std::cout << "Generating code...\n";
 
   // Create the top level interpreter function to call as entry

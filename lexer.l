@@ -1,7 +1,7 @@
 %{
 #include <string>
 #include "AST.h"
-#include "parser.hpp"
+#include "parser.tab.hh"
 
 #define  SaveToken  yylval.string = new std::string(yytext, yyleng)
 #define TOKEN(t) (yylval.token = t)

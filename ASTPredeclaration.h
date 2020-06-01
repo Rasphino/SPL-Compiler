@@ -1,116 +1,118 @@
 #ifndef SPLC_NODEPRECEDENCE_H
 #define SPLC_NODEPRECEDENCE_H
 
-class Node;
+namespace AST {
+    class Node;
 
-class Program;
+    class Program;
 
-class ProgramHead;
+    class ProgramHead;
 
-class Routine;
+    class Routine;
 
-class RoutineHead;
+    class RoutineHead;
 
-class SubRoutine;
+    class SubRoutine;
 
-class LabelPart;
+    class LabelPart;
 
-class ConstPart;
+    class ConstPart;
 
-class ConstExprList;
+    class ConstExprList;
 
-class ConstValue;
+    class ConstValue;
 
-class TypePart;
+    class TypePart;
 
-class TypeDeclList;
+    class TypeDeclList;
 
-class TypeDefinition;
+    class TypeDefinition;
 
-class TypeDecl;
+    class TypeDecl;
 
-class SimpleTypeDecl;
+    class SimpleTypeDecl;
 
-class ArrayTypeDecl;
+    class ArrayTypeDecl;
 
-class RecordTypeDecl;
+    class RecordTypeDecl;
 
-class FieldDeclList;
+    class FieldDeclList;
 
-class FieldDecl;
+    class FieldDecl;
 
-class NameList;
+    class NameList;
 
-class VarPart;
+    class VarPart;
 
-class VarDeclList;
+    class VarDeclList;
 
-class VarDecl;
+    class VarDecl;
 
-class RoutinePart;
+    class RoutinePart;
 
-class FunctionDecl;
+    class FunctionDecl;
 
-class FunctionHead;
+    class FunctionHead;
 
-class ProcedureDecl;
+    class ProcedureDecl;
 
-class ProcedureHead;
+    class ProcedureHead;
 
-class Parameters;
+    class Parameters;
 
-class ParaDeclList;
+    class ParaDeclList;
 
-class ParaTypeList;
+    class ParaTypeList;
 
-class VarParaList;
+    class VarParaList;
 
-class ValParaList;
+    class ValParaList;
 
-class RoutineBody;
+    class RoutineBody;
 
-class CompoundStmt;
+    class CompoundStmt;
 
-class StmtList;
+    class StmtList;
 
-class Stmt;
+    class Stmt;
 
-class NonLabelStmt;
+    class NonLabelStmt;
 
-class AssignStmt;
+    class AssignStmt;
 
-class ProcStmt;
+    class ProcStmt;
 
-class IfStmt;
+    class IfStmt;
 
-class ElseClause;
+    class ElseClause;
 
-class RepeatStmt;
+    class RepeatStmt;
 
-class WhileStmt;
+    class WhileStmt;
 
-class ForStmt;
+    class ForStmt;
 
-class Direction;
+    class Direction;
 
-class CaseStmt;
+    class CaseStmt;
 
-class CaseExprList;
+    class CaseExprList;
 
-class CaseExpr;
+    class CaseExpr;
 
-class GotoStmt;
+    class GotoStmt;
 
-class ExpressionList;
+    class ExpressionList;
 
-class Expression;
+    class Expression;
 
-class Expr;
+    class Expr;
 
-class Term;
+    class Term;
 
-class Factor;
+    class Factor;
 
-class ArgsList;
+    class ArgsList;
+}
 
 #endif //SPLC_NODEPRECEDENCE_H

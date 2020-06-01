@@ -8,6 +8,8 @@
 #include "codegen.h"
 
 using namespace llvm;
+using namespace AST;
+using namespace CodeGen;
 
 static Value *GetArrayRef(CodeGenContext &context, const std::string &id, Expression *index);
 

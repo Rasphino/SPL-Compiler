@@ -6,17 +6,17 @@
 
 #include "AST.h"
 #include "codegen.h"
-#include "parser.hpp"
+#include "parser.tab.hh"
 
 extern FILE *yyin;
-extern Program *astRoot;
+extern AST::Program *astRoot;
 
 extern int yyparse();
 
 std::ofstream astOut;
-int Node::idCount = 0;
+int AST::Node::idCount = 0;
 
-void printAST(Node *node) {
+void printAST(AST::Node *node) {
   auto children = node->getChildren();
   std::string info = node->getInfo();
   for (auto child : children) {
@@ -46,12 +46,12 @@ int main(int argc, char **argv) {
          << fmt::sprintf(R"({ key: %d, text: "%s", fill: "#f8f8f8", stroke: "#000000" }, )",
                          root->id, root->getName()) << std::endl;
   std::cout << "begin draw ast" << std::endl;
-  root->traverse(printAST, [](Node *){});
+  root->traverse(printAST, [](AST::Node *){});
   std::cout << "finish draw ast" << std::endl;
   astOut << "]" << std::endl;
   astOut.close();
 
-  CodeGenContext context;
+  CodeGen::CodeGenContext context;
   context.generateCode(root, "output.ll");
   return 0;
 }

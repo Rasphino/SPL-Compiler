@@ -24,7 +24,7 @@ include_directories(${LLVM_INCLUDE_DIRS})
 add_definitions(${LLVM_DEFINITIONS})
 
 
-add_executable(splc main.cpp AST.h AST.cpp parser.hpp codegen.cpp codegen.h ConstTable.h
+add_executable(splc main.cpp AST.h AST.cpp codegen.cpp codegen.h ConstTable.h
         ${FLEX_lexer_OUTPUTS}
         ${BISON_parser_OUTPUTS}
         )
