@@ -57,16 +57,10 @@ void CodeGenContext::generateCode(AST::Node *root, const std::string &outputFile
 
   while (!blocksStack.empty())
     popBlock();
-  // popBlock();
 
-  /* Print the bytecode in a human-readable format
-     to see if our program compiled properly
-   */
   std::cout << "Code is generated.\n";
 
-  // write IR to stderr
   std::cout << "code is gen~~~\n";
-  //    module->dump();
   llvm::outs() << *module;
   std::cout << "code is gen~!~\n";
   std::error_code ErrInfo;
@@ -74,7 +68,6 @@ void CodeGenContext::generateCode(AST::Node *root, const std::string &outputFile
   // output
   llvm::raw_ostream *out = new llvm::raw_fd_ostream(outputFilename, ErrInfo, llvm::sys::fs::F_None);
   *out << *module;
-  //    llvm::WriteBitcodeToFile(module, *out);
   out->flush();
   delete out;
 
@@ -112,7 +105,6 @@ void CodeGenContext::outputCode(const std::string& filename, bool aarch64) const
 
   module->setDataLayout(targetMachine->createDataLayout());
 
-  //	auto filename = "output.s";
   std::error_code EC;
   raw_fd_ostream dest(filename, EC, sys::fs::F_None);
 

@@ -148,7 +148,7 @@ namespace AST {
     class ConstPart : public AbstractStatement {
     public:
 
-        ConstExprList *constExprList{}; // might be nullptr
+        ConstExprList *constExprList{};
 
         explicit ConstPart(ConstExprList *constExprList) : constExprList(constExprList) {
           _children.emplace_back(constExprList);
@@ -184,7 +184,6 @@ namespace AST {
 // TODO: hacks needed
     class ConstValue : public AbstractExpression {
     public:
-        // todo: does char/string exist? Doesn't exist in yacc, but there is chr() function.
         enum {T_INTEGER, T_REAL, T_CHAR, T_SYS_CON, T_STRING} type;
 
         std::string value;
@@ -192,8 +191,6 @@ namespace AST {
         ConstValue(std::string value, decltype(type) type) : value(std::move(value)), type(type) {
           if (type == T_CHAR)
             this->value = this->value.substr(1, 1);
-          //		no T_STRING
-          //		if (type == T_STRING)
         }
 
         ConstValue *negate() {
@@ -279,11 +276,6 @@ namespace AST {
 
         llvm::Type *getType(CodeGen::CodeGenContext &context, std::string name);
 
-//	int getLowerBound(const ConstTable &table) {
-//		if(type == T_SIMPLE_TYPE_DECLARE) {
-//
-//		}
-//	}
     };
 
     class SimpleTypeDecl : public AbstractStatement {
@@ -293,7 +285,6 @@ namespace AST {
         std::string sysType;
         std::string name;
         NameList *nameList{};
-        //todo: manually handle negative signs?
         ConstValue *lowerBound{}, *upperBound{};
         std::string lowerName, upperName;
 
@@ -646,7 +637,7 @@ namespace AST {
     class StmtList : public AbstractStatement {
     public:
         StmtList *preList{};
-        Stmt *stmt{}; // fixme: might be nullptr, due to the grammar given...
+        Stmt *stmt{};
 
         StmtList(StmtList *preList, Stmt *stmt) : preList(preList), stmt(stmt) {
           _children.emplace_back(preList);
@@ -759,7 +750,6 @@ namespace AST {
         std::string sysProc;
         ExpressionList *expressionList{};
 
-        //fixme: read(factor) ??
         Factor *factor{};
 
         ProcStmt(decltype(type) type, const std::string &st) : type(type) {
@@ -948,7 +938,6 @@ namespace AST {
         }
     };
 
-// todo: expression or statement, does it matter?
     class ExpressionList : public AbstractExpression {
     public:
         ExpressionList *preList{};
@@ -967,7 +956,6 @@ namespace AST {
 
         Expression *expression{};
         Expr *expr{};
-//    llvm::Value *lastValue = nullptr;
 
         Expression(decltype(type) type, Expression *expression, Expr *expr) : type(type), expression(expression), expr(expr) {
           _children.emplace_back(expression);

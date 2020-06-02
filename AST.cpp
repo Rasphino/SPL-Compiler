@@ -46,14 +46,12 @@ static Value *GetRecordRef(CodeGenContext &context, const std::string &id, const
     auto second = llvm::ConstantInt::get(MyContext, llvm::APInt(32, i, false));
     idxList.push_back(first);
     idxList.push_back(second);
-    //        ptr = p->locals[id]; // ??
 
     Value *ptr;
     if (context.isReference(id)) {
       ptr = new llvm::LoadInst(p->locals[id], "", false, context.currentBlock());
-      //                ptr = tmp;
     } else {
-      ptr = p->locals[id]; // ??
+      ptr = p->locals[id];
     }
     Type *t = p->varTypes[id]->getType(context, id);
     GetElementPtrInst *elePtr = GetElementPtrInst::Create(nullptr, ptr, makeArrayRef(idxList), "",
@@ -79,9 +77,8 @@ static Value *GetArrayRef(CodeGenContext &context, const std::string &id, Expres
     Value *ptr;
     if (context.isReference(id)) {
       ptr = new llvm::LoadInst(p->locals[id], "", false, context.currentBlock());
-      //                ptr = tmp;
     } else {
-      ptr = p->locals[id]; // ??
+      ptr = p->locals[id];
     }
     Type *t = p->varTypes[id]->getType(context, id);
     Value *lowerBound = llvm::ConstantInt::get(MyContext, llvm::APInt(32,
@@ -96,8 +93,6 @@ static Value *GetArrayRef(CodeGenContext &context, const std::string &id, Expres
   }
   return nullptr;
 }
-
-//static Value *GetArrayRef(CodeGenContext &context, Value *index, const std::string &id);
 
 llvm::Value *Program::codeGen(CodeGenContext &context) {
     if (routine)
@@ -127,7 +122,7 @@ llvm::Value *ConstPart::codeGen(CodeGenContext &context) {
 }
 
 llvm::Value *ConstExprList::codeGen(CodeGenContext &context) {
-    if (preList) preList->codeGen(context); //顺序？从前往后？从后往前？
+    if (preList) preList->codeGen(context);
     auto var = value->codeGen(context);
     context.local()[name] = var;
     addToConstTable(context.constTable);
@@ -227,14 +222,13 @@ llvm::Value *VarPart::codeGen(CodeGenContext &context) {
 
 llvm::Value *VarDeclList::codeGen(CodeGenContext &context) {
     if (preList)
-        preList->codeGen(context);//顺序？从前往后？从后往前？
+        preList->codeGen(context);
     return varDecl->codeGen(context);
 }
 
 llvm::Value *VarDecl::codeGen(CodeGenContext &context) {
     NameList *n = nameList;
     while (n) {
-        // how to get type
         llvm::Type *t = typeDecl->getType(context, "");
         if (!t) {
             std::cerr << fmt::format("VarDecl::codeGen failed: undefined type.\n");
@@ -371,13 +365,13 @@ llvm::Value *FunctionDecl::codeGen(CodeGenContext &context) {
         } else {
             n = p->paraTypeList->varParaList->nameList;
             while (n) {
-                argTypes.push_back(Type::getInt32PtrTy(MyContext)); // or switch??
+                argTypes.push_back(Type::getInt32PtrTy(MyContext));
                 n = n->nameList;
             }
         }
 
         p = p->paraDeclList;
-    } // 反正倒序定义的到时候倒序访问应该不成问题假装
+    }
     FunctionType *ftype = FunctionType::get(functionHead->returnType->getType(context), makeArrayRef(argTypes), false);
     Function *function = Function::Create(ftype, llvm::GlobalValue::InternalLinkage, functionHead->name,
                                           context.module);
@@ -387,7 +381,6 @@ llvm::Value *FunctionDecl::codeGen(CodeGenContext &context) {
     p = functionHead->parameters->paraDeclList;
     llvm::Value *arg_value;
     auto args_values = function->arg_begin();
-    //    std::vector<llvm::Value *> var;
     std::vector<int> place;
     int i = 0;
     while (p) {
@@ -400,16 +393,15 @@ llvm::Value *FunctionDecl::codeGen(CodeGenContext &context) {
         while (n) {
             if (p->paraTypeList->type == ParaTypeList::T_VAR) {
                 AllocaInst *alloc = new AllocaInst(Type::getInt32PtrTy(MyContext), 0, n->name,
-                                                   context.currentBlock()); // or switch ??
+                                                   context.currentBlock());
                 context.local()[n->name] = alloc;
                 context.varType()[n->name] = new TypeDecl(p->paraTypeList->typeDecl);
                 context.reference().insert(n->name);
-                //                var.push_back(go);
                 place.push_back(i);
                 new llvm::StoreInst(args_values, alloc, false, context.currentBlock());
             } else {
                 AllocaInst *alloc = new AllocaInst(p->paraTypeList->typeDecl->getType(context), 0, n->name,
-                                                   context.currentBlock()); // 那个1是干什么的呢
+                                                   context.currentBlock());
                 context.local()[n->name] = alloc;
                 context.varType()[n->name] = new TypeDecl(p->paraTypeList->typeDecl);
                 new llvm::StoreInst(args_values, alloc, false, context.currentBlock());
@@ -424,16 +416,14 @@ llvm::Value *FunctionDecl::codeGen(CodeGenContext &context) {
         std::cout << "Error, redeclare function: " << functionHead->name;
         exit(0);
     }
-    //    context.funcParams[functionHead->name].storePlace = var;
     context.funcParams[functionHead->name].position = place;
     AllocaInst *alloc = new AllocaInst(functionHead->returnType->getType(context), 0, functionHead->name,
-                                       context.currentBlock()); // 那个1是干什么的呢
+                                       context.currentBlock());
     context.local()[functionHead->name] = alloc;
     context.varType()[functionHead->name] = new TypeDecl(functionHead->returnType);
 
     subRoutine->codeGen(context);
 
-    // Load return value
     auto retVal = new LoadInst(alloc, "", false, context.currentBlock());
     llvm::ReturnInst::Create(MyContext, retVal, context.currentBlock());
     context.popBlock();
@@ -459,13 +449,13 @@ llvm::Value *ProcedureDecl::codeGen(CodeGenContext &context) {
         } else {
             n = p->paraTypeList->varParaList->nameList;
             while (n) {
-                argTypes.push_back(Type::getInt32PtrTy(MyContext)); // or switch??
+                argTypes.push_back(Type::getInt32PtrTy(MyContext));
                 n = n->nameList;
             }
         }
 
         p = p->paraDeclList;
-    } // 反正倒序定义的到时候倒序访问应该不成问题假装
+    }
     FunctionType *ftype = FunctionType::get(Type::getVoidTy(MyContext), makeArrayRef(argTypes), false);
     Function *function = Function::Create(ftype, llvm::GlobalValue::InternalLinkage, procedureHead->name,
                                           context.module);
@@ -475,7 +465,6 @@ llvm::Value *ProcedureDecl::codeGen(CodeGenContext &context) {
     p = procedureHead->parameters->paraDeclList;
     llvm::Value *arg_value;
     auto args_values = function->arg_begin();
-    //    std::vector<llvm::Value *> var;
     std::vector<int> place;
     int i = 0;
     while (p) {
@@ -488,16 +477,15 @@ llvm::Value *ProcedureDecl::codeGen(CodeGenContext &context) {
         while (n) {
             if (p->paraTypeList->type == ParaTypeList::T_VAR) {
                 AllocaInst *alloc = new AllocaInst(Type::getInt32PtrTy(MyContext), 0, n->name,
-                                                   context.currentBlock()); // or switch ??
+                                                   context.currentBlock());
                 context.local()[n->name] = alloc;
                 context.varType()[n->name] = new TypeDecl(p->paraTypeList->typeDecl);
                 context.reference().insert(n->name);
-                //                var.push_back(go);
                 place.push_back(i);
                 new llvm::StoreInst(args_values, alloc, false, context.currentBlock());
             } else {
                 AllocaInst *alloc = new AllocaInst(p->paraTypeList->typeDecl->getType(context), 0, n->name,
-                                                   context.currentBlock()); // 那个1是干什么的呢
+                                                   context.currentBlock());
                 context.local()[n->name] = alloc;
                 context.varType()[n->name] = new TypeDecl(p->paraTypeList->typeDecl);
                 new llvm::StoreInst(args_values, alloc, false, context.currentBlock());
@@ -512,15 +500,10 @@ llvm::Value *ProcedureDecl::codeGen(CodeGenContext &context) {
         std::cout << "Error, redeclare procedure: " << procedureHead->name;
         exit(0);
     }
-    //    context.funcParams[procedureHead->name].storePlace = var;
     context.funcParams[procedureHead->name].position = place;
 
     subRoutine->codeGen(context);
 
-    // Load return value
-    //    auto retVal = new LoadInst(alloc, "", false, context.currentBlock());
-    //    llvm::ReturnInst::Create(MyContext, retVal, bblock
-    //    );
     llvm::ReturnInst::Create(MyContext, nullptr, context.currentBlock());
     context.popBlock();
 
@@ -588,25 +571,24 @@ llvm::Value *NonLabelStmt::codeGen(CodeGenContext &context) {
     }
 }
 
-void getPrintArgs(std::vector<llvm::Value *> &printf_args, std::string &printf_format, ExpressionList *p,
+void getPrintArgs(std::vector<llvm::Value *> &print_args, std::string &print_format, ExpressionList *p,
                   CodeGenContext &context) {
     if (p) {
         if (p->preList)
-            getPrintArgs(printf_args, printf_format, p->preList, context);
+            getPrintArgs(print_args, print_format, p->preList, context);
         auto arg_val = p->expression->codeGen(context);
         if (arg_val->getType() == llvm::Type::getInt32Ty(MyContext)) {
-            printf_format += "%d ";
-            //            std::cout << "SysFuncCall write variable previous name" << arg_val->getName().str() << std::endl;
-            printf_args.push_back(arg_val);
+          print_format += "%d ";
+            print_args.push_back(arg_val);
         } else if (arg_val->getType()->isDoubleTy() /*== llvm::Type::getDoubleTy(llvm::getGlobalContext())*/) {
-            printf_format += "%lf ";
-            printf_args.push_back(arg_val);
+          print_format += "%lf ";
+            print_args.push_back(arg_val);
         } else if (arg_val->getType() == Type::getInt8Ty(MyContext)) {
-            printf_format += "%c ";
-            printf_args.push_back(arg_val);
+          print_format += "%c ";
+            print_args.push_back(arg_val);
         } else if (arg_val->getType() == Type::getInt1Ty(MyContext)) {
-            printf_format += "%d ";
-            printf_args.push_back(arg_val);
+          print_format += "%d ";
+            print_args.push_back(arg_val);
         } else if (arg_val->getType() == llvm::Type::getInt8PtrTy(MyContext)) {
             std::cerr << "print string not implemented" << std::endl;
             std::exit(1);
@@ -614,14 +596,11 @@ void getPrintArgs(std::vector<llvm::Value *> &printf_args, std::string &printf_f
     }
 }
 
-void getReadArgs(std::vector<llvm::Value *> &printf_args, std::string &printf_format, Factor *f,
+void getReadArgs(std::vector<llvm::Value *> &read_args, std::string &read_format, Factor *f,
                  CodeGenContext &context) {
     if (f) {
-//        if (p->preList)
-//            getReadArgs(printf_args, printf_format, p->preList, context);
         Value *arg_val;
         Type *type;
-//        assert(p->expression->expr->term->factor); // 输入必须是简单的东西
         switch (f->type) {
             case Factor::T_NAME: {
                 arg_val = f->codeGen(context);
@@ -652,18 +631,17 @@ void getReadArgs(std::vector<llvm::Value *> &printf_args, std::string &printf_fo
                 return;
         }
         if (type == llvm::Type::getInt32Ty(MyContext)) {
-            printf_format += "%d";
-            //            std::cout << "SysFuncCall write variable previous name" << arg_val->getName().str() << std::endl;
-            printf_args.push_back(arg_val);
+          read_format += "%d";
+            read_args.push_back(arg_val);
         } else if (type->isDoubleTy() /*== llvm::Type::getDoubleTy(llvm::getGlobalContext())*/) {
-            printf_format += "%lf";
-            printf_args.push_back(arg_val);
+          read_format += "%lf";
+            read_args.push_back(arg_val);
         } else if (type == Type::getInt8Ty(MyContext)) {
-            printf_format += "%c";
-            printf_args.push_back(arg_val);
+          read_format += "%c";
+            read_args.push_back(arg_val);
         } else if (type == Type::getInt1Ty(MyContext)) {
-            printf_format += "%d";
-            printf_args.push_back(arg_val);
+          read_format += "%d";
+            read_args.push_back(arg_val);
         } else if (type == llvm::Type::getInt8PtrTy(MyContext)) {
             std::cerr << "read string not implemented" << std::endl;
             std::exit(1);
@@ -687,9 +665,6 @@ llvm::Value *funcGen(CodeGenContext &context, std::string &procId, ArgsList *arg
 
             std::vector<llvm::Value *> indices;
             indices.push_back(zero);
-            //            indices.push_back(zero);
-
-            //            auto tmp = new llvm::LoadInst(*i, "", false, context.currentBlock()); // ??
             if (!p->expression || p->expression->type != Expression::T_EXPR ||
                 p->expression->expr->type != Expr::T_TERM ||
                 p->expression->expr->term->type != Term::T_FACTOR ||
@@ -772,8 +747,6 @@ llvm::Value *ProcStmt::codeGen(CodeGenContext &context) {
             getPrintArgs(printf_args, printf_format, p, context);
             if (sysProc == "writeln")
                 printf_format += "\n";
-            //            else printf_format = printf_format.substr(0, printf_format.size()-1);
-            //            std::cout << printf_format << std::endl;
 
             auto printf_format_const = llvm::ConstantDataArray::getString(MyContext, printf_format, true);
             auto format_string_var = new llvm::GlobalVariable(*context.module,
@@ -909,7 +882,6 @@ llvm::Value *CaseExpr::codeGen(CodeGenContext &context, Value *condition, BasicB
     Function *currentFuction = context.blocksStack.top()->function;
     BasicBlock *btrue = BasicBlock::Create(MyContext, "thenStmt", currentFuction);
     BasicBlock *bfalse = BasicBlock::Create(MyContext, "elseStmt", currentFuction);
-//    BasicBlock *bmerge = BasicBlock::Create(MyContext, "mergeStmt", currentFuction);
     Value *cmp;
     if (type == T_CONST) cmp = constValue->codeGen(context);
     else {
@@ -983,7 +955,6 @@ llvm::Value *WhileStmt::codeGen(CodeGenContext &context) {
     context.popBlock();
     context.pushBlock(bexit);
     context.blocksStack.top()->function = currentFuction;
-    //    context.popBlock(); // ??
     return ret;
 }
 
@@ -1004,7 +975,6 @@ llvm::Value *RepeatStmt::codeGen(CodeGenContext &context) {
     context.pushBlock(bexit);
     context.blocksStack.top()->function = currentFuction;
 
-    //    context.popBlock(); // ??
     return ret;
 }
 
@@ -1057,7 +1027,6 @@ llvm::Value *Expression::codeGen(CodeGenContext &context) {
                 break;
         }
     }
-    //    lastValue = res;
     return res;
 }
 
@@ -1166,7 +1135,7 @@ llvm::Value *Factor::codeGen(CodeGenContext &context) {
                     auto tmp = new llvm::LoadInst(p->locals[name], "", false, context.currentBlock());
                     return new llvm::LoadInst(tmp, "", false, context.currentBlock());
                 }
-                return new llvm::LoadInst(p->locals[name], "", false, context.currentBlock()); // ??
+                return new llvm::LoadInst(p->locals[name], "", false, context.currentBlock());
             }
             fmt::print("Undefined variable: {}\n", name);
             exit(1);
@@ -1205,7 +1174,7 @@ llvm::Value *Factor::codeGen(CodeGenContext &context) {
             context.pushBlock(bmerge);
             context.blocksStack.top()->function = currentFuction;
 
-            return tmp; // not finished
+            return tmp;
         }
         case T_NAME_ARGS:
             return funcGen(context, name, argsList);
@@ -1219,8 +1188,6 @@ llvm::Value *Factor::codeGen(CodeGenContext &context) {
                                               ConstantInt::get(val_2->getType(), llvm::APInt(32, 0, false)), val_2,
                                               "",
                                               context.currentBlock());
-
-            //            auto e = new Expr(2, new Expr(new Term(new Factor(new ConstValue(0, 1)))), new Term(factor));
         }
         case T_ID_DOT_ID:
             return new LoadInst(GetRecordRef(context, id, recordId), "", false, context.currentBlock());
@@ -1248,11 +1215,9 @@ llvm::Value *ForStmt::codeGen(CodeGenContext &context) {
     BasicBlock *sloop = BasicBlock::Create(MyContext, "startloop", currentFuction);
     BasicBlock *bloop = BasicBlock::Create(MyContext, "loopStmt", currentFuction);
     BasicBlock *bexit = BasicBlock::Create(MyContext, "eixtStmt", currentFuction);
-    //  initial for
     AssignStmt *initial = new AssignStmt(loopId, firstBound);
     initial->codeGen(context);
     llvm::BranchInst::Create(sloop, context.currentBlock());
-    //  for test
     context.pushBlock(sloop);
     context.blocksStack.top()->function = currentFuction;
 
@@ -1266,7 +1231,6 @@ llvm::Value *ForStmt::codeGen(CodeGenContext &context) {
     context.pushBlock(bloop);
     context.blocksStack.top()->function = currentFuction;
     stmt->codeGen(context);
-    //update
     Factor *f1;
     auto int1 = new ConstValue("1", ConstValue::T_INTEGER);
     Value *update;
@@ -1300,12 +1264,10 @@ llvm::Value *ForStmt::codeGen(CodeGenContext &context) {
     context.pushBlock(bexit);
     context.blocksStack.top()->function = currentFuction;
 
-    //    context.popBlock(); // ??
-    stmt->codeGen(context); // why ? -- 因为包括右边的
+    stmt->codeGen(context);
     delete initial;
     delete f;
     delete int1;
-    //    delete update;
     delete f1;
     return ret;
 }

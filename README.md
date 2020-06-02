@@ -1,5 +1,6 @@
 # SPL-Compiler
-A naive SPL compiler implementation in C++.
+使用C++与LLVM实现的简单SPL编译器
+
 ## 依赖
   - LLVM 9.0
   - C++ 17 standard
@@ -7,6 +8,7 @@ A naive SPL compiler implementation in C++.
 ## 编译
 
 ```bash
+mkdir build; cd build
 cmake ..
 make
 ```
@@ -57,7 +59,7 @@ AST节点信息，用于`visualize.html` 可视化
 
 open visualize.html
 
-3. 代码生成(default target和MIPS)
+3. 代码生成(default target和aarch64)
 
 default target可在本机编译运行，检查正确性。
 aarch64为扩展实现。
