@@ -45,7 +45,7 @@ namespace AST {
         virtual std::string getName() {
           std::string id = typeid(*this).name();
           std::smatch matchResult;
-          if (std::regex_match(id, matchResult, std::regex("[0-9]*(.*)"))) {
+          if (std::regex_match(id, matchResult, std::regex("N3AST[0-9]*(.*)E"))) {
             return matchResult[1].str();
           }
           return id;
